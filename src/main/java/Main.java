@@ -6,6 +6,7 @@ import org.apache.maven.scm.manager.BasicScmManager;
 import org.apache.maven.scm.manager.NoSuchScmProviderException;
 import org.apache.maven.scm.manager.ScmManager;
 import org.apache.maven.scm.provider.git.jgit.JGitScmProvider;
+import org.apache.maven.scm.provider.svn.svnexe.SvnExeScmProvider;
 import org.apache.maven.scm.repository.ScmRepository;
 import org.apache.maven.scm.repository.ScmRepositoryException;
 import java.io.File;
@@ -17,6 +18,7 @@ public class Main {
     public Main() {
         scmManager = new BasicScmManager();
         scmManager.setScmProvider("git", new JGitScmProvider());
+        scmManager.setScmProvider("svn", new SvnExeScmProvider());
     }
 
     public CheckOutScmResult cloneRepository(String scmUrl, String revision, String cloneTo) throws ScmException {
@@ -26,8 +28,9 @@ public class Main {
             buildDir.mkdir();
         }
 
-        ScmRepository repo = getScmRepository(String.format("scm:%s:%s", "git", scmUrl), scmManager);
+        ScmRepository repo = getScmRepository(String.format("scm:%s:%s", "svn", scmUrl), scmManager);
         return scmManager.checkOut(repo, new ScmFileSet(buildDir), new ScmTag(revision));
+//        return scmManager.checkOut(repo, new ScmFileSet(buildDir), false);
     }
 
     private ScmRepository getScmRepository(String scmUrl, ScmManager scmManager) throws ScmException {
@@ -42,7 +45,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Main mainy = new Main();
-        CheckOutScmResult result = mainy.cloneRepository("https://github.com/thescouser89/maven-scm-play.git", "master", "/tmp/test2");
-        System.out.println(result);
+        CheckOutScmResult result = mainy.cloneRepository("http://svn.ruby-lang.org/repos/ruby/trunk", "", "/tmp/test4");
+        System.out.println(result.isSuccess());
     }
 }
